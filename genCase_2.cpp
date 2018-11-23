@@ -148,7 +148,7 @@ void maximisation(vector<vector<double> > &transmissionMatrix, vector<vector<dou
 double em(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix, double error = 0.01, int iterations = 1){
   double capa, old_c = 0;
   int M = inputAlphabetsDistribution.size();
-  vector<double> outputDis(3,0);
+  vector<double> outputDis(transmissionMatrix[0].size(),0);
   vector<vector <double> >mutualIm(M, vector<double> (2,0));
   vector<double> horiz_marginalVals;
   vector<vector<double> > verti_marginalVals;
