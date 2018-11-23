@@ -15,7 +15,6 @@ void init(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<dou
 }
 //Utility function
 void decToBin(int x, int inputAlphabetsDisSize, vector<int>& rep) {
-  //vector<int> ans(inputAlphabetsDisSize, 0);
   for(int i = 0; i < inputAlphabetsDisSize; ++i) rep.push_back(0);
   int i = 0;
   while(x > 0) {
@@ -24,7 +23,6 @@ void decToBin(int x, int inputAlphabetsDisSize, vector<int>& rep) {
     x = x/2;
   }
   reverse(rep.begin(), rep.end());
-  //return ans;
 }
 
 double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
@@ -33,26 +31,19 @@ double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabe
   int ysize = transmissionMatrix[0].size();
   int inpAlpSize = inputAlphabetsDistribution.size();
   double cumPro, probY;
-  //cout << "ysize: " << ysize << endl;
-  // vector<double> outputDis(ysize, 0);
   for(int y = 0; y < ysize; ++y) {
 		probY = 0;
     for(int i = 0; i < noOfPermutation; ++i) {
       vector<int> rep;
       decToBin(i, inpAlpSize, rep);  
-      //cout << rep.size() << endl;
       cumPro = 1;
       for(int j = 0; j < rep.size(); ++j) {
-          //cout << " Now Here: " << j << " " << endl;
         cumPro *= inputAlphabetsDistribution[j][rep[j]];
       }
-      //cout << " Now Here: I " << endl;
       probY += cumPro*transmissionMatrix[i][y];
    }
     outputDis[y] = probY;
   }
-   //cout << "We are here: " << outputDis.size() << endl;
-    //for(int i = 0; i < outputDis.size(); ++i) cout << outputDis[i] << " "; cout << endl;
   double capacity=0;
   for(int y=0; y<ysize; y++){
     for(int i=0; i< noOfPermutation; ++i){
@@ -75,14 +66,11 @@ void prob_adjustment(vector<vector<double> > &transitionMatrix, vector<vector<do
     for(int j=0; j<2; j++){
       double num; 
       double deno=0;
-	  // cout << "vm: " << verti_marginalVals[i][j] << endl;
       num = mutualIm[i][j];
       for(int k=0; k < 2 ; k++) {
-		  // cout << "inp Dis: " << inputAlphabetsDistribution[i][k] << endl;
 		  deno += (inputAlphabetsDistribution[i][k]*mutualIm[i][k]);
 	  }
-      if(deno == 0) cout << "Chutiya: " << endl;
-	  // cout << "Num : " << num << " " << "Deno : " << deno << endl;
+      if(deno == 0) cout << "Error: Denominator zero" << endl;
 	  inputAlphabetsDistribution[i][j] *= num/deno;
     }
   }
@@ -122,7 +110,6 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
            for(int p=0; p<M-1; p++){
              p_xm_dash *= tempDistribution[p][xm_dash[p]];
            }
-           //double contri = 1;
            for(int y = 0; y < outputDis.size(); ++y) {
              double p_y_given_x_M = transmissionMatrix[pos][y];
              double p_y = outputDis[y];
@@ -135,12 +122,6 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
      }
 }
 
-
-
-// void expectation(vector<vector<double> > &verti_marginalVals, vector<double>& horiz_marginalVals, vector<vector<double> > &inputAlphabetsDistribution, double capa){
-// 	horiz_marginalization(capa, inputAlphabetsDistribution, horiz_marginalVals);
-//   verti_marginalization(capa, inputAlphabetsDistribution, horiz_marginalVals, verti_marginalVals);
-// }
 void maximisation(vector<vector<double> > &transmissionMatrix, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &mutualIm){
 	prob_adjustment(transmissionMatrix, inputAlphabetsDistribution, mutualIm);	
 }
@@ -150,17 +131,13 @@ double em(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<dou
   int M = inputAlphabetsDistribution.size();
   vector<double> outputDis(transmissionMatrix[0].size(),0);
   vector<vector <double> >mutualIm(M, vector<double> (2,0));
-  vector<double> horiz_marginalVals;
-  vector<vector<double> > verti_marginalVals;
   int LIM = iterations; 
   while(iterations--){
-    //cout << iterations << endl;
     capa = capacity(outputDis, inputAlphabetsDistribution, transmissionMatrix);
     if(abs(capa - old_c) < error) return capa;
     old_c = capa;
 	  cout << LIM - iterations << " " << capa << endl;
     marginalisation(mutualIm, outputDis, inputAlphabetsDistribution, transmissionMatrix);
-    // expectation(mutualIm, outputDis, inputAlphabetsDistribution, capa);
     maximisation(transmissionMatrix, inputAlphabetsDistribution, mutualIm);
   }
   return capa;
