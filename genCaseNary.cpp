@@ -5,6 +5,7 @@ using namespace std;
 void xM(int x, vector<vector<double> > &inputAlphabetsDistribution, vector<int>& inpVector) {
   int i, siz;
   for(i=0; i<inpVector.size(); i++)inpVector[i]=0;
+	i=0;
   while(x > 0) {
   	siz = (inputAlphabetsDistribution[i].size());
     inpVector[i] = x % siz;
