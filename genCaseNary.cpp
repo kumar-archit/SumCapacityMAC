@@ -19,7 +19,7 @@ int nPerm(vector<int> inpVector, vector<vector<double> > &inputAlphabetsDistribu
   int ans=0;
   for(int temp = siz - 1; temp>=0;temp--){
   	//here we mush denote ordinal values to symbols i.e. they must start from 0 and be sequential integers
-    ans += inpVector[temp]*(inputAlphabetsDistribution[siz-temp-1].size());
+    ans += inpVector[temp]*(inputAlphabetsDistribution[temp].size());
   }
   return ans;
 }
