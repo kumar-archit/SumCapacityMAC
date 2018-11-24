@@ -64,12 +64,12 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
 	double product, p_xm_dash;
 	vector<vector<double> > tempDistribution;
 	tempDistribution.resize(noOfInputAlphabets-1);
-	vector<int> xm_dash;
+	vector<int> xm_dash(noOfInputAlphabets-1);
 	vector<int> xm;
 	// int lim = pow(2, M-1);
 	int noOfPermutation = 1, lim;
 	for(int i=0; i<noOfInputAlphabets; i++) 
-		lim *= inputAlphabetsDistribution.size();
+		noOfPermutation *= inputAlphabetsDistribution.size();
 
 	for(int i = 0; i < noOfInputAlphabets; i++) {
 		count=0;
@@ -86,7 +86,7 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
 		for(int k=0; k<siz; k++){  
 			product = 1;
 			 for(int j = 0; j < lim; ++j) {
-				xM(j, noOfInputAlphabets - 1, xm_dash);
+				xM(j, tempDistribution, xm_dash);
 				xm = xm_dash;
 				xm.emplace(xm.begin() + i, k);
 				pos = nPerm(xm);
