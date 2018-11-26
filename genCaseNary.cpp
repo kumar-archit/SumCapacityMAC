@@ -14,16 +14,16 @@ void xM(int x, vector<vector<double> > &inputAlphabetsDistribution, vector<int>&
   }
   reverse(inpVector.begin(), inpVector.end());
 }
-int nPerm(vector<int> inpVector, vector<vector<double> > &inputAlphabetsDistribution){
+int nPerm(vector<int> inpVector, vector<vector<double> > &inputAlphabetsDistribution, int noOfPermutation){
   int siz = inpVector.size();
   int ans=0;
   for(int temp = siz - 1; temp>=0;temp--){
+  	noOfPermutation /= inputAlphabetsDistribution[temp].size();
   	//here we mush denote ordinal values to symbols i.e. they must start from 0 and be sequential integers
-    ans += inpVector[temp]*(inputAlphabetsDistribution[temp].size());
+    ans += inpVector[temp]*noOfPermutation;
   }
   return ans;
 }
-
 double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
   //calc P(Y)
 	int noOfPermutation = transmissionMatrix.size();
@@ -89,7 +89,7 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
 				xM(j, tempDistribution, xm_dash);
 				xm = xm_dash;
 				xm.emplace(xm.begin() + i, k);
-				pos = nPerm(xm);
+				pos = nPerm(xm, inputAlphabetsDistribution, noOfPermutation);
 				p_xm_dash=1 ;
 				for(int p=0; p<noOfInputAlphabets-1; p++){
 					p_xm_dash *= tempDistribution[p][xm_dash[p]];
