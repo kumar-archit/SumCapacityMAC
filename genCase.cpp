@@ -16,7 +16,7 @@ Capacity of the Channel
 
 #include <bits/stdc++.h>
 using namespace std;
-//Initialization
+//Initialization of inputAlphabetsDistribution vector and transmissionMatrix 2d vector by taking input from user/ file
 void init(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
   int siz=inputAlphabetsDistribution.size(), i,j;
   for(i=0; i<siz; i++){
@@ -29,7 +29,12 @@ void init(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<dou
       cin>>transmissionMatrix[i][j];
   }
 }
-//Utility function
+
+/*
+ * a function to convert a decimal number to binary number, the size of binary number is equal to inputAlphabetsDisSize.
+ * this function is required to find the row corresponding to the input vector in the transmission matrix. Here decToBin  
+ * is useful only because the input alphabets are binary. In general case xM method is used. See also: binToDec
+ */
 void decToBin(int x, int inputAlphabetsDisSize, vector<int>& rep) {
   for(int i = 0; i < inputAlphabetsDisSize; ++i) rep.push_back(0);
   int i = 0;
@@ -41,6 +46,11 @@ void decToBin(int x, int inputAlphabetsDisSize, vector<int>& rep) {
   reverse(rep.begin(), rep.end());
 }
 
+/*
+ * a function to calculate capacity  by first calculating probability distribution of output alphabet
+ * noOfPermutation	:	total number of possible input vectors 
+ * probY		:	vector to store output alphabet probability distribution
+ */
 double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
   //calc P(Y)
   int noOfPermutation = transmissionMatrix.size();
@@ -75,7 +85,11 @@ double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabe
 
   return capacity;
 }
-
+/*
+ * a function to change the probability distributions of input alphabets using 
+ * mutual information. This updation of probability distribution happens in each step of EM method.
+ * see also: prob_adjustment_updated
+ */
 void prob_adjustment(vector<vector<double> > &transitionMatrix, vector<vector<double> >& inputAlphabetsDistribution, vector<vector<double> > &mutualIm) {
   int M  = inputAlphabetsDistribution.size();
   for(int i=0; i<M; i++){
@@ -91,6 +105,11 @@ void prob_adjustment(vector<vector<double> > &transitionMatrix, vector<vector<do
     }
   }
 }
+
+/*
+ * similar to prob_adjustment, implementation slightly different due to the fact of using a different function monotonically  
+ * increasing function than exponential.
+ */
 void prob_adjustment_updated(vector<vector<double> > &transitionMatrix, vector<vector<double> >& inputAlphabetsDistribution, vector<vector<double> > &mutualIm) {
   int M  = inputAlphabetsDistribution.size();
   for(int i=0; i<M; i++){
@@ -109,6 +128,10 @@ void prob_adjustment_updated(vector<vector<double> > &transitionMatrix, vector<v
     }
   }
 }
+
+/*
+ * converts a binary number to decimal number
+ */
 int binToDec(vector<int> rep){
   int temp = rep.size()-1;
   int siz = rep.size();
@@ -118,6 +141,17 @@ int binToDec(vector<int> rep){
   }
   return ans;
 }
+
+
+/*
+ * a function to calculate mutual information of each alphabets' every symbol in a 2d vector mutualIm
+ * tempDistribution is a 2d vector used to store the probability distribution of all alphabets other than the 
+ * currently focussed one in Marginalisation algorithm. This matrix is of size (noOfInputAlphabets-1)*2.
+ *
+ * a temporary vector xm_dash (one less dimension) is generated which can be used to in-turn generate many more  
+ * (equal to size of omitted alphabet).
+ *
+ */
 void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputDis, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
   int M = inputAlphabetsDistribution.size();
   int count;
@@ -130,32 +164,36 @@ void marginalisation( vector<vector<double> > &mutualIm, vector<double> &outputD
         for(int k=0; k<2; k++){
           tempDistribution[count][k] = inputAlphabetsDistribution[j][k];
         }
-          count++;
+        count++;
       } 
       for(int k=0; k<2; k++){  
-	      product = 1;
-      	 for(int j = 0; j < lim; ++j) {
-           vector<int> xm_dash;
-           decToBin(j, M - 1, xm_dash);
-           vector<int> xm = xm_dash;
-           xm.emplace(xm.begin() + i, k);
-           int pos = binToDec(xm);
-           double p_xm_dash=1 ;
-           for(int p=0; p<M-1; p++){
-             p_xm_dash *= tempDistribution[p][xm_dash[p]];
-           }
-           for(int y = 0; y < outputDis.size(); ++y) {
-             double p_y_given_x_M = transmissionMatrix[pos][y];
-             double p_y = outputDis[y];
-             product *= pow((p_y_given_x_M)/(p_y), p_xm_dash*p_y_given_x_M);
-           }
-         }
+        product = 1;
+        for(int j = 0; j < lim; ++j) {
+          vector<int> xm_dash;
+          decToBin(j, M - 1, xm_dash);
+          vector<int> xm = xm_dash;
+          xm.emplace(xm.begin() + i, k);
+          int pos = binToDec(xm);
+          double p_xm_dash=1 ;
+          for(int p=0; p<M-1; p++){
+            p_xm_dash *= tempDistribution[p][xm_dash[p]];
+          }
+          for(int y = 0; y < outputDis.size(); ++y) {
+            double p_y_given_x_M = transmissionMatrix[pos][y];
+            double p_y = outputDis[y];
+            product *= pow((p_y_given_x_M)/(p_y), p_xm_dash*p_y_given_x_M);
+          }
+        }
         mutualIm[i][k] = product;
-       }
-  		
-     }
+      }
+    }
 }
 
+/*
+ * marginalisation_updated is a similar function to marginalisation with slightly different implementation due to
+ * use of a different monotonically increasing function than exponential function.
+ *
+ */
 void marginalisation_updated( vector<vector<double> > &mutualIm, vector<double> &outputDis, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
   int M = inputAlphabetsDistribution.size();
   int count;
@@ -204,12 +242,20 @@ void marginalisation_updated( vector<vector<double> > &mutualIm, vector<double> 
      }
 }
 
+/*
+ *
+ *
+ */
 void maximisation(vector<vector<double> > &transmissionMatrix, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &mutualIm){
 // 	prob_adjustment(transmissionMatrix, inputAlphabetsDistribution, mutualIm);	
 	prob_adjustment_updated(transmissionMatrix, inputAlphabetsDistribution, mutualIm);	
 
 }
-
+/*
+ * Implementation of Expectation-Maximisation paradigm
+ * Expectation step is performed by marginalisation function
+ * Maximisation step is performed by Maximisation function
+ */
 double em(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix, double error = 0.01, int iterations = 1){
   double capa, old_c = 0;
   int M = inputAlphabetsDistribution.size();
