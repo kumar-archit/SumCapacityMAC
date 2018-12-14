@@ -1,3 +1,19 @@
+/* A program to find the capacity of MAC channel Multi user case (each alphabet is binary) by implementing Blahut Arimoto Algorithm
+ *
+ *  Created on: 10-Oct-2018
+ *     
+ */
+
+/*
+Input[Optional]: 
+1. input probability distribution of input alphabet. 
+2. transition matrix for the channel
+[3]. Number of iterations for Expectation-Maximisation to run.
+[4]. Accepted error in Capacity.
+Output:
+Capacity of the Channel
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 //Initialization
@@ -211,6 +227,13 @@ double em(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<dou
   }
   return capa;
 }
+
+/* noOfInputAlphabets:	total input users
+ * outputAlphabetSize:	no of symbols in output alphabet
+ * inputAlphabetDistribution:	a 2d vector to store probability distributions of all the input alphabets
+ * tranmissionMatrix: a matrix of size (product of size of all input alphabets) * size of output alphabet to store
+ *
+ */
 int main(){
     int noOfInputAlphabets, outputAlphabetSize, siz;
     cin>>noOfInputAlphabets >> outputAlphabetSize;
