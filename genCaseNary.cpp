@@ -38,7 +38,7 @@ void xM(int x, vector<vector<double> > &inputAlphabetsDistribution, vector<int>&
 /* 
  * converts a vector to a decimal number which translates to the row corresponding to the input vector in the
  * transition matrix.
- */`
+ */
 int nPerm(vector<int> inpVector, vector<vector<double> > &inputAlphabetsDistribution, int noOfPermutation){
   int siz = inpVector.size();
   int ans=0;
@@ -78,7 +78,7 @@ double capacity(vector<double> &outputDis, vector<vector<double> > &inputAlphabe
 
 	for(y=0; y<outputAlphabetSize; y++){
 		for(i=0; i< noOfPermutation; ++i){
-		  xM(i, noOfInputAlphabets, inpVector);
+		  xM(i, inputAlphabetsDistribution, inpVector);
 		  cumPro = 1;
 		  for(j = 0; j < inpVector.size(); ++j) {
 		    cumPro *= inputAlphabetsDistribution[j][inpVector[j]];
@@ -189,14 +189,15 @@ double em(vector<vector<double> > &inputAlphabetsDistribution, vector<vector<dou
 		old_c = capa;
 		cout << LIM - iterations << " " << capa << endl;
 		marginalisation(mutualIm, outputDis, inputAlphabetsDistribution, transmissionMatrix);
-		prob_adjustment(inputAlphabetsDistribution, mutualIm) {
+		prob_adjustment(inputAlphabetsDistribution, mutualIm);
 
 	}
 }
 //Initialization of inputAlphabetsDistribution vector and transmissionMatrix 2d vector by taking input from user/ file
-void init(int noOfInputAlphabets, int outputAlphabetSize, vector<int> alphabetSize, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
+void init(int noOfInputAlphabets, int outputAlphabetSize, vector<int> &alphabetSize, vector<vector<double> > &inputAlphabetsDistribution, vector<vector<double> > &transmissionMatrix){
 	int  i,j, siz=1, tSiz;
 	alphabetSize.resize(noOfInputAlphabets);
+	inputAlphabetsDistribution.resize(noOfInputAlphabets);
 	for(i=0; i<noOfInputAlphabets; i++){
 		cin>>tSiz;
 		alphabetSize[i]=tSiz;
